@@ -99,15 +99,7 @@ El servidor estará disponible en `http://localhost:8080`
 La base de datos está alojada en **Supabase** (PostgreSQL).
 
 ### Configuración
-El archivo `src/main/resources/application.properties` contiene la configuración de conexión:
-
-```properties
-spring.datasource.url=jdbc:postgresql://[HOST]:5432/postgres
-spring.datasource.username=[USUARIO]
-spring.datasource.password=[CONTRASEÑA]
-```
-
-> ⚠️ Las credenciales de producción se proporcionan por separado por seguridad.
+El archivo `src/main/resources/application.properties` contiene la configuración de conexión
 
 ---
 
@@ -154,4 +146,4 @@ Proyecto académico - Universidad Francisco de Paula Santander
 
 **Desarrollado por:** David Báez  
 **Programa:** Ingeniería de Sistemas  
-**Año:** 2024
+**Año:** 2025
