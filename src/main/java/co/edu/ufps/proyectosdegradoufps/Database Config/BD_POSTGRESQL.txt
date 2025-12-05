@@ -1,0 +1,245 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.actas_comite (
+  id integer NOT NULL DEFAULT nextval('actas_comite_id_seq'::regclass),
+  comite_id integer NOT NULL,
+  proyecto_id integer NOT NULL,
+  tipo_acta character varying NOT NULL,
+  numero_acta character varying NOT NULL UNIQUE,
+  fecha_acta date NOT NULL,
+  concepto character varying CHECK (concepto::text = ANY (ARRAY['APROBADO'::character varying, 'CORRECCIONES'::character varying, 'RECHAZADO'::character varying]::text[])),
+  observaciones text,
+  documento_acta_url character varying,
+  CONSTRAINT actas_comite_pkey PRIMARY KEY (id),
+  CONSTRAINT actas_comite_comite_id_fkey FOREIGN KEY (comite_id) REFERENCES public.comites(id),
+  CONSTRAINT actas_comite_proyecto_id_fkey FOREIGN KEY (proyecto_id) REFERENCES public.proyectos(id)
+);
+CREATE TABLE public.administradores (
+  id integer NOT NULL DEFAULT nextval('administradores_id_seq'::regclass),
+  profesor_cedula character varying NOT NULL UNIQUE,
+  cargo character varying NOT NULL,
+  fecha_inicio_cargo date NOT NULL,
+  fecha_fin_cargo date,
+  activo boolean DEFAULT true,
+  fecha_fin date,
+  comite_id integer,
+  es_admin_general boolean DEFAULT false,
+  CONSTRAINT administradores_pkey PRIMARY KEY (id),
+  CONSTRAINT administradores_profesor_cedula_fkey FOREIGN KEY (profesor_cedula) REFERENCES public.profesores(cedula),
+  CONSTRAINT administradores_comite_id_fkey FOREIGN KEY (comite_id) REFERENCES public.comites(id)
+);
+CREATE TABLE public.areas_investigacion (
+  id integer NOT NULL DEFAULT nextval('areas_investigacion_id_seq'::regclass),
+  nombre character varying NOT NULL,
+  descripcion text,
+  activo boolean DEFAULT true,
+  CONSTRAINT areas_investigacion_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.comites (
+  id integer NOT NULL DEFAULT nextval('comites_id_seq'::regclass),
+  programa_codigo character varying NOT NULL UNIQUE,
+  nombre character varying NOT NULL,
+  fecha_creacion date,
+  CONSTRAINT comites_pkey PRIMARY KEY (id),
+  CONSTRAINT comites_programa_codigo_fkey FOREIGN KEY (programa_codigo) REFERENCES public.programas(codigo)
+);
+CREATE TABLE public.directores_externos (
+  cedula character varying NOT NULL,
+  titulo_academico character varying,
+  institucion_procedencia character varying,
+  especialidad character varying,
+  aprobado_comite boolean DEFAULT false,
+  fecha_aprobacion date,
+  acta_aprobacion_comite character varying,
+  CONSTRAINT directores_externos_pkey PRIMARY KEY (cedula),
+  CONSTRAINT directores_externos_cedula_fkey FOREIGN KEY (cedula) REFERENCES public.usuarios(cedula)
+);
+CREATE TABLE public.estados_proyecto (
+  id integer NOT NULL DEFAULT nextval('estados_proyecto_id_seq'::regclass),
+  estado character varying NOT NULL UNIQUE,
+  fase character varying NOT NULL,
+  descripcion text,
+  orden integer NOT NULL,
+  CONSTRAINT estados_proyecto_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.estudiantes (
+  cedula character varying NOT NULL,
+  codigo_estudiantil character varying NOT NULL UNIQUE,
+  programa_codigo character varying NOT NULL,
+  fecha_ingreso date,
+  CONSTRAINT estudiantes_pkey PRIMARY KEY (cedula),
+  CONSTRAINT estudiantes_cedula_fkey FOREIGN KEY (cedula) REFERENCES public.usuarios(cedula),
+  CONSTRAINT estudiantes_programa_codigo_fkey FOREIGN KEY (programa_codigo) REFERENCES public.programas(codigo)
+);
+CREATE TABLE public.estudiantes_proyecto (
+  id integer NOT NULL DEFAULT nextval('estudiantes_proyecto_id_seq'::regclass),
+  proyecto_id integer NOT NULL,
+  estudiante_cedula character varying NOT NULL,
+  fecha_vinculacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  activo boolean DEFAULT true,
+  CONSTRAINT estudiantes_proyecto_pkey PRIMARY KEY (id),
+  CONSTRAINT estudiantes_proyecto_proyecto_id_fkey FOREIGN KEY (proyecto_id) REFERENCES public.proyectos(id),
+  CONSTRAINT estudiantes_proyecto_estudiante_cedula_fkey FOREIGN KEY (estudiante_cedula) REFERENCES public.estudiantes(cedula)
+);
+CREATE TABLE public.evaluadores_asignados (
+  id integer NOT NULL DEFAULT nextval('evaluadores_asignados_id_seq'::regclass),
+  acta_nombramiento_id integer NOT NULL,
+  profesor_cedula character varying NOT NULL,
+  fecha_entrega_evaluacion date,
+  CONSTRAINT evaluadores_asignados_pkey PRIMARY KEY (id),
+  CONSTRAINT evaluadores_asignados_acta_nombramiento_id_fkey FOREIGN KEY (acta_nombramiento_id) REFERENCES public.actas_comite(id),
+  CONSTRAINT evaluadores_asignados_profesor_cedula_fkey FOREIGN KEY (profesor_cedula) REFERENCES public.profesores(cedula)
+);
+CREATE TABLE public.facultades (
+  id integer NOT NULL DEFAULT nextval('facultades_id_seq'::regclass),
+  nombre character varying NOT NULL,
+  CONSTRAINT facultades_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.historiales (
+  id integer NOT NULL DEFAULT nextval('historiales_id_seq'::regclass),
+  proyecto_id integer NOT NULL,
+  tipo_evento_id integer NOT NULL,
+  descripcion text,
+  fecha_evento timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  usuario_responsable_cedula character varying,
+  CONSTRAINT historiales_pkey PRIMARY KEY (id),
+  CONSTRAINT historiales_proyecto_id_fkey FOREIGN KEY (proyecto_id) REFERENCES public.proyectos(id),
+  CONSTRAINT historiales_tipo_evento_id_fkey FOREIGN KEY (tipo_evento_id) REFERENCES public.tipos_evento_historial(id),
+  CONSTRAINT historiales_usuario_responsable_cedula_fkey FOREIGN KEY (usuario_responsable_cedula) REFERENCES public.usuarios(cedula)
+);
+CREATE TABLE public.jurados (
+  id integer NOT NULL DEFAULT nextval('jurados_id_seq'::regclass),
+  proyecto_id integer NOT NULL,
+  profesor_cedula character varying NOT NULL,
+  calificacion_individual numeric CHECK (calificacion_individual >= 0.0 AND calificacion_individual <= 5.0),
+  CONSTRAINT jurados_pkey PRIMARY KEY (id),
+  CONSTRAINT jurados_proyecto_id_fkey FOREIGN KEY (proyecto_id) REFERENCES public.proyectos(id),
+  CONSTRAINT jurados_profesor_cedula_fkey FOREIGN KEY (profesor_cedula) REFERENCES public.profesores(cedula)
+);
+CREATE TABLE public.lineas_investigacion (
+  id integer NOT NULL DEFAULT nextval('lineas_investigacion_id_seq'::regclass),
+  nombre character varying NOT NULL,
+  area_id integer NOT NULL,
+  descripcion text,
+  activo boolean DEFAULT true,
+  CONSTRAINT lineas_investigacion_pkey PRIMARY KEY (id),
+  CONSTRAINT lineas_investigacion_area_id_fkey FOREIGN KEY (area_id) REFERENCES public.areas_investigacion(id)
+);
+CREATE TABLE public.modalidades_proyecto (
+  id integer NOT NULL DEFAULT nextval('modalidades_proyecto_id_seq'::regclass),
+  tipo_proyecto_id integer NOT NULL,
+  nombre character varying NOT NULL UNIQUE,
+  descripcion text,
+  CONSTRAINT modalidades_proyecto_pkey PRIMARY KEY (id),
+  CONSTRAINT modalidades_proyecto_tipo_proyecto_id_fkey FOREIGN KEY (tipo_proyecto_id) REFERENCES public.tipos_proyecto(id)
+);
+CREATE TABLE public.notificaciones (
+  id integer NOT NULL DEFAULT nextval('notificaciones_id_seq'::regclass),
+  usuario_cedula character varying NOT NULL,
+  titulo character varying NOT NULL,
+  mensaje text NOT NULL,
+  enlace character varying,
+  leida boolean DEFAULT false,
+  fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  fecha_lectura timestamp without time zone,
+  CONSTRAINT notificaciones_pkey PRIMARY KEY (id),
+  CONSTRAINT notificaciones_usuario_cedula_fkey FOREIGN KEY (usuario_cedula) REFERENCES public.usuarios(cedula)
+);
+CREATE TABLE public.paises (
+  id integer NOT NULL DEFAULT nextval('paises_id_seq'::regclass),
+  nombre character varying NOT NULL,
+  CONSTRAINT paises_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.profesores (
+  cedula character varying NOT NULL,
+  titulo_academico character varying,
+  especialidad character varying,
+  tipo_profesor character varying CHECK (tipo_profesor::text = ANY (ARRAY['PLANTA'::character varying::text, 'CATEDRATICO'::character varying::text, 'OCASIONAL'::character varying::text])),
+  fecha_vinculacion date,
+  CONSTRAINT profesores_pkey PRIMARY KEY (cedula),
+  CONSTRAINT profesores_cedula_fkey FOREIGN KEY (cedula) REFERENCES public.usuarios(cedula)
+);
+CREATE TABLE public.programas (
+  codigo character varying NOT NULL,
+  snies character varying NOT NULL UNIQUE,
+  nombre character varying NOT NULL,
+  facultad_id integer NOT NULL,
+  CONSTRAINT programas_pkey PRIMARY KEY (codigo),
+  CONSTRAINT programas_facultad_id_fkey FOREIGN KEY (facultad_id) REFERENCES public.facultades(id)
+);
+CREATE TABLE public.proyectos (
+  id integer NOT NULL DEFAULT nextval('proyectos_id_seq'::regclass),
+  codigo_proyecto character varying UNIQUE,
+  director_profesor_cedula character varying,
+  director_externo_cedula character varying,
+  modalidad_id integer NOT NULL,
+  linea_investigacion_id integer NOT NULL,
+  titulo character varying NOT NULL,
+  descripcion text,
+  objetivo_general text,
+  estado_id integer NOT NULL,
+  fecha_presentacion date,
+  fecha_inicio_desarrollo date,
+  fecha_fin_estimada date,
+  fecha_sustentacion date,
+  porcentaje_avance integer DEFAULT 0 CHECK (porcentaje_avance >= 0 AND porcentaje_avance <= 100),
+  nota_final numeric CHECK (nota_final >= 0.0 AND nota_final <= 5.0),
+  resultado_final character varying CHECK (resultado_final::text = ANY (ARRAY['APROBADA'::character varying, 'MERITORIA'::character varying, 'LAUREADA'::character varying, 'RECHAZADA'::character varying, 'A_CORREGIR'::character varying]::text[])),
+  documento_propuesta_url character varying,
+  documento_final_url character varying,
+  acta_sustentacion character varying,
+  fecha_ultima_actualizacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT proyectos_pkey PRIMARY KEY (id),
+  CONSTRAINT proyectos_director_profesor_cedula_fkey FOREIGN KEY (director_profesor_cedula) REFERENCES public.profesores(cedula),
+  CONSTRAINT proyectos_director_externo_cedula_fkey FOREIGN KEY (director_externo_cedula) REFERENCES public.directores_externos(cedula),
+  CONSTRAINT proyectos_modalidad_id_fkey FOREIGN KEY (modalidad_id) REFERENCES public.modalidades_proyecto(id),
+  CONSTRAINT proyectos_linea_investigacion_id_fkey FOREIGN KEY (linea_investigacion_id) REFERENCES public.lineas_investigacion(id),
+  CONSTRAINT proyectos_estado_id_fkey FOREIGN KEY (estado_id) REFERENCES public.estados_proyecto(id)
+);
+CREATE TABLE public.reuniones (
+  id integer NOT NULL DEFAULT nextval('reuniones_id_seq'::regclass),
+  proyecto_id integer NOT NULL,
+  fecha_reunion timestamp without time zone NOT NULL,
+  duracion_minutos integer NOT NULL CHECK (duracion_minutos > 0),
+  tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['PRESENCIAL'::character varying, 'VIRTUAL'::character varying, 'CORREO'::character varying, 'TELEFONICA'::character varying]::text[])),
+  temas_tratados text NOT NULL,
+  acuerdos text NOT NULL,
+  proxima_reunion date,
+  asistio_estudiante boolean NOT NULL,
+  observaciones text,
+  CONSTRAINT reuniones_pkey PRIMARY KEY (id),
+  CONSTRAINT reuniones_proyecto_id_fkey FOREIGN KEY (proyecto_id) REFERENCES public.proyectos(id)
+);
+CREATE TABLE public.tipos_evento_historial (
+  id integer NOT NULL DEFAULT nextval('tipos_evento_historial_id_seq'::regclass),
+  evento character varying NOT NULL UNIQUE,
+  nombre character varying NOT NULL,
+  categoria character varying,
+  cambia_estado boolean DEFAULT false,
+  estado_resultante_id integer,
+  descripcion text,
+  orden integer,
+  CONSTRAINT tipos_evento_historial_pkey PRIMARY KEY (id),
+  CONSTRAINT tipos_evento_historial_estado_resultante_id_fkey FOREIGN KEY (estado_resultante_id) REFERENCES public.estados_proyecto(id)
+);
+CREATE TABLE public.tipos_proyecto (
+  id integer NOT NULL DEFAULT nextval('tipos_proyecto_id_seq'::regclass),
+  tipo character varying NOT NULL UNIQUE CHECK (tipo::text = ANY (ARRAY['INVESTIGACION'::character varying, 'EXTENSION'::character varying]::text[])),
+  descripcion text,
+  CONSTRAINT tipos_proyecto_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.usuarios (
+  cedula character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  password_hash character varying NOT NULL,
+  nombres character varying NOT NULL,
+  apellidos character varying NOT NULL,
+  telefono character varying,
+  pais_id integer NOT NULL,
+  tipo_usuario character varying NOT NULL CHECK (tipo_usuario::text = ANY (ARRAY['ESTUDIANTE'::character varying, 'PROFESOR'::character varying, 'DIRECTOR_EXTERNO'::character varying]::text[])),
+  activo boolean DEFAULT true,
+  fecha_registro timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT usuarios_pkey PRIMARY KEY (cedula),
+  CONSTRAINT usuarios_pais_id_fkey FOREIGN KEY (pais_id) REFERENCES public.paises(id)
+);

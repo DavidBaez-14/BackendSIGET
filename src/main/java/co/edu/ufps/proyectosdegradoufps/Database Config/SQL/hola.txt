@@ -1,0 +1,139 @@
+Bien. Necesito que readaptes esa forma de narrar sobre este enunciado de una bd que ando haciendo, sucede que es demasiado largo y especifico en cosas que no deberia, te digo cuales cosas deberian mejorar: 
+
+Uso de titulos, eso no va, la idea es hacer un enunciado completo
+
+No se necesita especificar que estados del proyecto hay, se entiende que van asociados a las fases, solo deja en claro sus atributos en ese parrafo
+
+En historial lo mismo, con dejar claro los atributos y decir que hay eventos que cambian el estado del proyecto es suficiente y otros que son meramente de informacion es suficiente. No se requieren ejemplos ahi
+
+<ENUNCIADO A REESCRIBIR>
+
+SISTEMA DE GESTIÓN DE PROYECTOS DE GRADO - UNIVERSIDAD FRANCISCO DE PAULA SANTANDER
+
+CONTEXTO
+
+La Universidad Francisco de Paula Santander (UFPS), ubicada en Cúcuta, Colombia, requiere un sistema de información para gestionar integralmente los proyectos de grado de sus estudiantes. Según el Acuerdo No. 51 de 2019, Título V sobre Trabajos de Grado, todo estudiante debe desarrollar un proyecto bajo una de siete modalidades específicas antes de graduarse.
+
+La universidad cuenta con múltiples facultades, cada una con varios programas académicos identificados por código SNIES. Cada programa tiene asociado un Comité Curricular encargado de evaluar y aprobar los proyectos de grado. Los proyectos se desarrollan dentro de líneas de investigación organizadas por áreas temáticas.
+
+
+
+USUARIOS DEL SISTEMA
+
+El sistema contempla tres tipos principales de usuarios: estudiantes, profesores y directores externos. Los profesores pueden ser de planta, catedráticos u ocasionales, y se caracterizan por su título académico, especialidad y fecha de vinculación. Los directores externos son profesionales de otras instituciones que, previa aprobación del comité, pueden dirigir proyectos. Los estudiantes están identificados por su código estudiantil y programa académico.
+
+Algunos profesores asumen roles administrativos adicionales, como directores de programa o coordinadores, con fechas de inicio y fin de cargo definidas. Estos roles otorgan permisos especiales para gestionar procesos del sistema.
+
+
+
+TIPOS Y MODALIDADES DE PROYECTOS
+
+Según el estatuto, existen dos tipos de proyectos: Investigación y Extensión. Dentro de Investigación se encuentran las modalidades de Monografía, Trabajo de Investigación y Sistematización del Conocimiento. En Extensión están Trabajo Social, Consultoría, Pasantía y Trabajo Dirigido. Cada proyecto debe clasificarse obligatoriamente en una modalidad y una línea de investigación.
+
+Los proyectos pueden ser individuales o grupales, con un máximo de tres estudiantes por proyecto. Cada proyecto tiene un único director, que puede ser un profesor interno o un director externo previamente aprobado.
+
+
+
+FASES DEL PROYECTO
+
+FORMULACIÓN: El estudiante registra la propuesta inicial con título, objetivos, modalidad y línea de investigación, y solicita un director. La coordinación revisa el formato y los requisitos mínimos. Posteriormente, el comité asigna evaluadores que revisan el contenido académico. El proyecto pasa por revisiones de formato, contenido y comité curricular. El comité emite un concepto final que puede ser: APROBADO, CORRECCIONES o RECHAZADO. En caso de correcciones, el estudiante debe reenviar el proyecto para nueva evaluación.
+
+EJECUCIÓN: Una vez aprobado, el proyecto entra en desarrollo. El director programa reuniones periódicas de seguimiento con los estudiantes. El sistema debe registrar estas reuniones con fecha, duración, tipo (presencial, virtual, telefónica o correo), temas tratados, acuerdos y asistencia de los estudiantes. Durante esta fase se actualizan porcentajes de avance. Los estudiantes presentan informes parciales y finales que el director debe aprobar. Es posible solicitar prórrogas que el comité debe evaluar.
+
+CIERRE Y SUSTENTACIÓN: Al finalizar el desarrollo, se verifica la documentación completa. El comité asigna tres jurados para evaluar el proyecto. Se programa fecha y hora de sustentación. Durante la sustentación, cada jurado asigna una calificación individual entre 0.0 y 5.0. El sistema calcula la nota final como el promedio de las tres calificaciones.
+
+FINALIZACIÓN: Según la nota final obtenida, el proyecto recibe un resultado: RECHAZADA (menos de 2.0), A_CORREGIR (2.0 a 2.9), APROBADA (3.0 a 4.4), MERITORIA (4.5 a 4.9) o LAUREADA (5.0). Los proyectos meritorios y laureados requieren aprobación adicional del comité mediante acta. Finalmente, el proyecto se archiva en el repositorio institucional.
+
+
+
+ESTADOS DEL PROYECTO
+
+El sistema contempla 20 estados posibles organizados en 6 fases: FORMULACIÓN (registrado, en revisión de formato, con correcciones de formato), EVALUACIÓN (en revisión de contenido, con correcciones de contenido, en revisión de comité, con observaciones de comité), APROBACIÓN (aprobado para inicio), EJECUCIÓN (en desarrollo, prórroga solicitada, informe parcial presentado, informe final presentado), CIERRE (en revisión final, sustentación programada, en sustentación, cerrado), FINALIZACIÓN (finalizado, archivado, cancelado, rechazado).
+
+
+
+HISTORIAL Y TRAZABILIDAD
+
+El sistema mantiene un registro cronológico completo del ciclo de vida de cada proyecto mediante una tabla de historial. Existen 44 tipos de eventos catalogados, divididos en dos categorías: eventos que cambian el estado del proyecto (23 eventos) y eventos meramente informativos que no alteran el estado (21 eventos).
+
+Los eventos incluyen atributos como tipo de evento, descripción, fecha y hora exacta, usuario responsable que genera el evento, y el estado resultante si aplica. Ejemplos de eventos que cambian estado: registro inicial, inicio de revisión de formato, aprobación del comité, inicio de desarrollo, programación de sustentación. Ejemplos de eventos informativos: asignación de director, cambio de director, actualización de avance, reunión de seguimiento, asignación de jurados.
+
+
+
+ACTAS DEL COMITÉ
+
+Todas las decisiones oficiales del comité curricular se documentan mediante actas. Cada acta tiene un número único, fecha, tipo de acta (nombramiento de evaluadores, concepto de anteproyecto, nombramiento de jurados, resultado de sustentación), concepto emitido (aprobado, correcciones, rechazado), observaciones y enlace al documento PDF oficial. Las actas pueden asignar menciones honoríficas (meritoria o laureada) que requieren aprobación del comité.
+
+Cuando se asignan evaluadores, el acta registra qué profesores fueron designados y la fecha límite de entrega de sus evaluaciones.
+
+
+
+JURADOS Y CALIFICACIONES
+
+Para la sustentación se asignan tres jurados, todos profesores de la institución. Cada jurado registra su calificación individual. El sistema almacena estas calificaciones y calcula automáticamente la nota final promedio. Esta nota determina el resultado final del proyecto según los rangos establecidos.
+
+
+
+NOTIFICACIONES
+
+El sistema genera notificaciones automáticas para los usuarios cuando ocurren eventos relevantes: aprobación o rechazo de propuesta, asignación como evaluador o jurado, programación de sustentación, cambios de estado del proyecto, solicitudes de correcciones. Las notificaciones incluyen título, mensaje, enlace relacionado, estado de lectura y fecha de visualización.
+
+
+
+INFORMACIÓN COMPLEMENTARIA
+
+El sistema almacena URLs de documentos importantes: propuesta inicial del proyecto, documento final, actas del comité. No se almacenan los archivos directamente, sino enlaces a sistemas de almacenamiento externos como Google Drive o repositorios institucionales.
+
+Se registran datos de los países de origen de usuarios, facultades con sus códigos, programas con código SNIES, áreas y líneas de investigación con descripción y estado activo. Toda esta información sirve como base para clasificar y organizar los proyectos.
+
+
+
+DATOS ESPECÍFICOS A GESTIONAR
+
+Usuarios: cédula, email, contraseña encriptada, nombres, apellidos, teléfono, país, tipo de usuario, estado activo.
+
+Estudiantes: código estudiantil, programa académico, fecha de ingreso.
+
+Profesores: título académico, especialidad, tipo de profesor, fecha de vinculación.
+
+Directores externos: título académico, institución de procedencia, especialidad, aprobación del comité, fecha de aprobación.
+
+Proyectos: código único, título, descripción, objetivo general, director asignado, modalidad, línea de investigación, estado actual, fechas de presentación, inicio de desarrollo, finalización estimada, sustentación, porcentaje de avance, nota final, resultado final, documentos asociados.
+
+Relación estudiantes-proyectos: estudiante, proyecto, fecha de vinculación, estado activo.
+
+Reuniones: proyecto, fecha y hora, duración en minutos, tipo, temas tratados, acuerdos, próxima reunión, asistencia del estudiante, observaciones.
+
+Jurados: proyecto, profesor, calificación individual.
+
+Actas de comité: comité, proyecto, tipo de acta, número de acta, fecha, concepto, observaciones, documento oficial, mención otorgada.
+
+Evaluadores asignados: acta de nombramiento, profesor, fecha de entrega de evaluación.
+
+Historial: proyecto, tipo de evento, descripción, fecha y hora exacta, usuario responsable.
+
+Tipos de evento: código del evento, nombre, categoría, indica si cambia estado, estado al que transiciona, descripción, orden.
+
+Estados de proyecto: nombre del estado, fase a la que pertenece, descripción, orden.
+
+Notificaciones: usuario destinatario, título, mensaje, enlace, estado de lectura, fecha de creación, fecha de lectura.
+
+Comités: programa asociado, nombre, fecha de creación.
+
+Modalidades: tipo de proyecto, nombre, descripción.
+
+Tipos de proyecto: nombre (Investigación o Extensión), descripción.
+
+Líneas de investigación: nombre, área a la que pertenece, descripción.
+
+Áreas de investigación: nombre, descripción.
+
+Programas: código SNIES, nombre, facultad.
+
+Facultades: nombre, código.
+
+Países: nombre.
+
+Administradores: profesor, cargo, fecha de inicio, fecha de fin, estado activo.
+
+ </ENUNCIADO A REESCRIBIR>
