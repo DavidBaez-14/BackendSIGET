@@ -15,4 +15,11 @@ public interface EstudianteProyectoRepository extends JpaRepository<EstudiantePr
     List<EstudianteProyecto> findByProyectoId(Integer proyectoId);
     
     List<EstudianteProyecto> findByEstudianteCedula(String cedula);
+    
+    // Método adicional para contar integrantes activos de un proyecto
+    default long countActiveByProyectoId(Integer proyectoId) {
+        return findByProyectoId(proyectoId).stream()
+                .filter(EstudianteProyecto::getActivo)
+                .count();
+    }
 }

@@ -143,6 +143,8 @@ CREATE TABLE public.notificaciones (
   leida boolean DEFAULT false,
   fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   fecha_lectura timestamp without time zone,
+  tipo character varying DEFAULT 'GENERAL'::character varying CHECK (tipo::text = ANY (ARRAY['GENERAL'::character varying, 'INVITACION_PROYECTO'::character varying, 'CAMBIO_ESTADO'::character varying, 'REUNION'::character varying]::text[])),
+  metadata jsonb,
   CONSTRAINT notificaciones_pkey PRIMARY KEY (id),
   CONSTRAINT notificaciones_usuario_cedula_fkey FOREIGN KEY (usuario_cedula) REFERENCES public.usuarios(cedula)
 );
