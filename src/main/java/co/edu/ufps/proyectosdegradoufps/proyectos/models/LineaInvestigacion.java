@@ -20,4 +20,7 @@ public class LineaInvestigacion {
     @ManyToOne
     @JoinColumn(name = "area_id", nullable = false)
     private AreaInvestigacion areaInvestigacion;
+    
+    @Column(nullable = false)
+    private Boolean activo = true;
 }

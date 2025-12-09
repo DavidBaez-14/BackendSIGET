@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface LineaInvestigacionRepository extends JpaRepository<LineaInvestigacion, Integer> {
     List<LineaInvestigacion> findByAreaInvestigacionId(Integer areaId);
+    List<LineaInvestigacion> findByActivoTrue();
 }

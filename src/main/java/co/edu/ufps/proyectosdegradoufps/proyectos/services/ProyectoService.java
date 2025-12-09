@@ -106,23 +106,28 @@ public class ProyectoService {
                 .orElseThrow(() -> new RuntimeException("Estado REGISTRADO no encontrado en la base de datos"));
         proyecto.setEstado(estado);
 
-        // 6. Asignar Director
+        // 6. Asignar Director (OPCIONAL - puede ser null al crear el proyecto)
         String tipoDirector = dto.getTipoDirector();
-        if (tipoDirector == null || tipoDirector.isEmpty()) {
-            tipoDirector = "PROFESOR"; // Por defecto
-        }
+        String directorCedula = dto.getDirectorCedula();
         
-        if ("PROFESOR".equalsIgnoreCase(tipoDirector)) {
-            Profesor profesor = profesorRepository.findById(dto.getDirectorCedula())
-                    .orElseThrow(() -> new RuntimeException("Profesor director no encontrado: " + dto.getDirectorCedula()));
-            proyecto.setDirectorProfesor(profesor);
-        } else if ("EXTERNO".equalsIgnoreCase(tipoDirector)) {
-            DirectorExterno externo = directorExternoRepository.findById(dto.getDirectorCedula())
-                    .orElseThrow(() -> new RuntimeException("Director externo no encontrado: " + dto.getDirectorCedula()));
-            proyecto.setDirectorExterno(externo);
-        } else {
-            throw new RuntimeException("Tipo de director inválido: " + tipoDirector + ". Use PROFESOR o EXTERNO.");
+        if (directorCedula != null && !directorCedula.isEmpty()) {
+            if (tipoDirector == null || tipoDirector.isEmpty()) {
+                tipoDirector = "PROFESOR"; // Por defecto
+            }
+            
+            if ("PROFESOR".equalsIgnoreCase(tipoDirector)) {
+                Profesor profesor = profesorRepository.findById(directorCedula)
+                        .orElseThrow(() -> new RuntimeException("Profesor director no encontrado: " + directorCedula));
+                proyecto.setDirectorProfesor(profesor);
+            } else if ("EXTERNO".equalsIgnoreCase(tipoDirector)) {
+                DirectorExterno externo = directorExternoRepository.findById(directorCedula)
+                        .orElseThrow(() -> new RuntimeException("Director externo no encontrado: " + directorCedula));
+                proyecto.setDirectorExterno(externo);
+            } else {
+                throw new RuntimeException("Tipo de director inválido: " + tipoDirector + ". Use PROFESOR o EXTERNO.");
+            }
         }
+        // Si no hay director, los campos directorProfesor y directorExterno quedan en null
 
         // 7. Guardar Proyecto
         proyecto = proyectoRepository.save(proyecto);

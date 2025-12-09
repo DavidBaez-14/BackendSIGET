@@ -1,15 +1,13 @@
 package co.edu.ufps.proyectosdegradoufps.notificaciones.controllers;
 
-import co.edu.ufps.proyectosdegradoufps.notificaciones.dtos.InvitacionRequest;
-import co.edu.ufps.proyectosdegradoufps.notificaciones.dtos.NotificacionDTO;
-import co.edu.ufps.proyectosdegradoufps.notificaciones.dtos.ResponderInvitacionRequest;
-import co.edu.ufps.proyectosdegradoufps.notificaciones.dtos.EstudianteDTO;
+import co.edu.ufps.proyectosdegradoufps.notificaciones.dtos.*;
 import co.edu.ufps.proyectosdegradoufps.notificaciones.services.NotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -114,6 +112,92 @@ public class NotificacionController {
         try {
             NotificacionDTO notificacion = notificacionService.marcarComoLeida(id);
             return ResponseEntity.ok(notificacion);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    // ========================================
+    // ENDPOINTS PARA DIRECTORES
+    // ========================================
+    
+    /**
+     * Buscar directores (profesores y directores externos) por nombre o especialidad
+     */
+    @GetMapping("/buscar-directores")
+    public ResponseEntity<List<DirectorDTO>> buscarDirectores(@RequestParam(required = false) String busqueda) {
+        return ResponseEntity.ok(notificacionService.buscarDirectores(busqueda));
+    }
+    
+    /**
+     * Listar todos los directores disponibles
+     */
+    @GetMapping("/listar-directores")
+    public ResponseEntity<List<DirectorDTO>> listarTodosLosDirectores() {
+        return ResponseEntity.ok(notificacionService.listarTodosLosDirectores());
+    }
+    
+    /**
+     * Enviar invitación a un director
+     */
+    @PostMapping("/invitar-director")
+    public ResponseEntity<?> enviarInvitacionDirector(@RequestBody InvitacionDirectorRequest request) {
+        try {
+            NotificacionDTO notificacion = notificacionService.enviarInvitacionDirector(request);
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Invitación enviada correctamente al director",
+                    "notificacion", notificacion
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Responder invitación de dirección (Aceptar/Rechazar)
+     */
+    @PostMapping("/{id}/responder-direccion")
+    public ResponseEntity<?> responderInvitacionDirector(
+            @PathVariable Integer id,
+            @RequestBody ResponderInvitacionRequest request) {
+        try {
+            NotificacionDTO notificacion = notificacionService.responderInvitacionDirector(id, request.getRespuesta());
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Invitación de dirección " + request.getRespuesta().toLowerCase(),
+                    "notificacion", notificacion
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Cancelar invitación de dirección
+     */
+    @PostMapping("/{id}/cancelar-invitacion-director")
+    public ResponseEntity<?> cancelarInvitacionDirector(@PathVariable Integer id) {
+        try {
+            NotificacionDTO notificacion = notificacionService.cancelarInvitacionDirector(id);
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Invitación cancelada correctamente",
+                    "notificacion", notificacion
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Obtener invitación pendiente de un proyecto
+     */
+    @GetMapping("/proyecto/{proyectoId}/invitacion-pendiente")
+    public ResponseEntity<?> obtenerInvitacionPendiente(@PathVariable Integer proyectoId) {
+        try {
+            NotificacionDTO invitacion = notificacionService.obtenerInvitacionPendienteProyecto(proyectoId);
+            if (invitacion == null) {
+                return ResponseEntity.ok(Collections.singletonMap("invitacion", null));
+            }
+            return ResponseEntity.ok(Map.of("invitacion", invitacion));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
