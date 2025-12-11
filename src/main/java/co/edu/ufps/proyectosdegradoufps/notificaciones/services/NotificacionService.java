@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -192,7 +193,7 @@ public class NotificacionService {
                 " te ha invitado a unirte a su proyecto: " + request.getTituloProyecto());
         notificacion.setEnlace("/proyectos/" + proyecto.getId());
         notificacion.setLeida(false);
-        notificacion.setFechaCreacion(LocalDateTime.now());
+        notificacion.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         
         // 7. Crear metadata JSON
         try {
@@ -251,11 +252,26 @@ public class NotificacionService {
             Estudiante estudiante = estudianteRepository.findById(notificacion.getUsuarioCedula())
                     .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
             
-            // 6. Crear registro en estudiantes_proyecto
-            EstudianteProyecto ep = new EstudianteProyecto();
-            ep.setProyecto(proyecto);
-            ep.setEstudiante(estudiante);
-            ep.setActivo(true);
+            // 6. Verificar si ya existe un registro (activo o inactivo) - UPSERT
+            Optional<EstudianteProyecto> registroExistente = estudianteProyectoRepository
+                    .findAll()
+                    .stream()
+                    .filter(ep -> ep.getProyecto().getId().equals(proyectoId) && 
+                                  ep.getEstudiante().getCedula().equals(estudiante.getCedula()))
+                    .findFirst();
+            
+            EstudianteProyecto ep;
+            if (registroExistente.isPresent()) {
+                // Si existe, reactivarlo
+                ep = registroExistente.get();
+                ep.setActivo(true);
+            } else {
+                // Si no existe, crear uno nuevo
+                ep = new EstudianteProyecto();
+                ep.setProyecto(proyecto);
+                ep.setEstudiante(estudiante);
+                ep.setActivo(true);
+            }
             estudianteProyectoRepository.save(ep);
             
             // 7. Registrar en historial
@@ -267,7 +283,7 @@ public class NotificacionService {
             historial.setTipoEvento(tipoEvento);
             historial.setDescripcion("Se unió el estudiante " + estudiante.getNombres() + " " + 
                     estudiante.getApellidos() + " al equipo de trabajo");
-            historial.setFechaEvento(LocalDateTime.now());
+            historial.setFechaEvento(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             historial.setUsuarioResponsable(estudiante);
             historialRepository.save(historial);
             
@@ -279,7 +295,7 @@ public class NotificacionService {
             notifInvitante.setMensaje("Tu compañero ha aceptado unirse al proyecto");
             notifInvitante.setEnlace("/proyectos/" + proyectoId);
             notifInvitante.setLeida(false);
-            notifInvitante.setFechaCreacion(LocalDateTime.now());
+            notifInvitante.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             notificacionRepository.save(notifInvitante);
         } else {
             // Si rechaza, notificar al invitante
@@ -290,7 +306,7 @@ public class NotificacionService {
             notifInvitante.setMensaje("Tu compañero ha rechazado la invitación al proyecto");
             notifInvitante.setEnlace("/proyectos/" + proyectoId);
             notifInvitante.setLeida(false);
-            notifInvitante.setFechaCreacion(LocalDateTime.now());
+            notifInvitante.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
             notificacionRepository.save(notifInvitante);
         }
         
@@ -303,7 +319,7 @@ public class NotificacionService {
         }
         
         notificacion.setLeida(true);
-        notificacion.setFechaLectura(LocalDateTime.now());
+        notificacion.setFechaLectura(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         
         Notificacion notificacionActualizada = notificacionRepository.save(notificacion);
         return convertirADTO(notificacionActualizada);
@@ -318,7 +334,7 @@ public class NotificacionService {
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
         
         notificacion.setLeida(true);
-        notificacion.setFechaLectura(LocalDateTime.now());
+        notificacion.setFechaLectura(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         
         Notificacion notificacionActualizada = notificacionRepository.save(notificacion);
         return convertirADTO(notificacionActualizada);
@@ -483,7 +499,7 @@ public class NotificacionService {
         notificacion.setMensaje("Has sido invitado a dirigir el proyecto: " + proyecto.getTitulo());
         notificacion.setEnlace("/proyectos/" + proyecto.getId());
         notificacion.setLeida(false);
-        notificacion.setFechaCreacion(LocalDateTime.now());
+        notificacion.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         
         // 6. Obtener estudiantes del proyecto
         List<EstudianteProyecto> integrantes = estudianteProyectoRepository.findByProyectoId(proyecto.getId());
@@ -599,7 +615,7 @@ public class NotificacionService {
                     notificacion.getUsuarioCedula();
                 
                 historial.setDescripcion("Director asignado: " + nombreDirector);
-                historial.setFechaEvento(LocalDateTime.now());
+                historial.setFechaEvento(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
                 historial.setUsuarioResponsable(directorUsuario);
                 historialRepository.save(historial);
             }
@@ -624,7 +640,7 @@ public class NotificacionService {
                         notifEstudiante.setMensaje(nombreDirector + " ha aceptado dirigir tu proyecto: " + proyecto.getTitulo());
                         notifEstudiante.setEnlace("/proyectos/" + proyecto.getId());
                         notifEstudiante.setLeida(false);
-                        notifEstudiante.setFechaCreacion(LocalDateTime.now());
+                        notifEstudiante.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
                         notificacionRepository.save(notifEstudiante);
                     }
                 }
@@ -651,7 +667,7 @@ public class NotificacionService {
                         notifEstudiante.setMensaje(nombreDirector + " ha rechazado la invitación para dirigir tu proyecto: " + proyecto.getTitulo());
                         notifEstudiante.setEnlace("/proyectos/" + proyecto.getId());
                         notifEstudiante.setLeida(false);
-                        notifEstudiante.setFechaCreacion(LocalDateTime.now());
+                        notifEstudiante.setFechaCreacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
                         notificacionRepository.save(notifEstudiante);
                     }
                 }
@@ -660,7 +676,7 @@ public class NotificacionService {
         
         // 5. Marcar notificación como leída
         notificacion.setLeida(true);
-        notificacion.setFechaLectura(LocalDateTime.now());
+        notificacion.setFechaLectura(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         notificacion = notificacionRepository.save(notificacion);
         
         return convertirADTO(notificacion);
@@ -726,7 +742,7 @@ public class NotificacionService {
         
         // 3. Marcar como leída (para que desaparezca del dropdown del director)
         notificacion.setLeida(true);
-        notificacion.setFechaLectura(LocalDateTime.now());
+        notificacion.setFechaLectura(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         notificacion = notificacionRepository.save(notificacion);
         
         return convertirADTO(notificacion);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,14 +109,14 @@ public class HistorialService {
         historial.setProyecto(proyecto);
         historial.setTipoEvento(tipoEvento);
         historial.setDescripcion(request.getDescripcion() != null ? request.getDescripcion() : tipoEvento.getNombre());
-        historial.setFechaEvento(LocalDateTime.now());
+        historial.setFechaEvento(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         historial.setUsuarioResponsable(usuarioResponsable);
 
         historialRepository.save(historial);
 
         // 7. Actualizar el estado del proyecto
         proyecto.setEstado(nuevoEstado);
-        proyecto.setFechaUltimaActualizacion(LocalDateTime.now());
+        proyecto.setFechaUltimaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         proyectoRepository.save(proyecto);
 
         return convertirAHistorialDTO(historial);
@@ -140,7 +141,7 @@ public class HistorialService {
         historial.setProyecto(proyecto);
         historial.setTipoEvento(tipoEvento);
         historial.setDescripcion(request.getDescripcion() != null ? request.getDescripcion() : tipoEvento.getNombre());
-        historial.setFechaEvento(LocalDateTime.now());
+        historial.setFechaEvento(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         historial.setUsuarioResponsable(usuarioResponsable);
 
         historialRepository.save(historial);

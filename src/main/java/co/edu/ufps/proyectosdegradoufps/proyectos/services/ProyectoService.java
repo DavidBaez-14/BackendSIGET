@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,7 +91,7 @@ public class ProyectoService {
         
         // Fechas iniciales
         proyecto.setFechaPresentacion(LocalDate.now());
-        proyecto.setFechaUltimaActualizacion(LocalDateTime.now());
+        proyecto.setFechaUltimaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         proyecto.setPorcentajeAvance(0);
 
         // 5. Asignar relaciones

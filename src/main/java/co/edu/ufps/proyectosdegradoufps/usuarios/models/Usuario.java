@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "usuarios")
@@ -44,7 +45,14 @@ public class Usuario {
     private Boolean activo = true;
     
     @Column(name = "fecha_registro", nullable = false)
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
+    private LocalDateTime fechaRegistro;
+    
+    @PrePersist
+    protected void onCreate() {
+        if (fechaRegistro == null) {
+            fechaRegistro = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        }
+    }
     
     public enum TipoUsuario {
         ESTUDIANTE,

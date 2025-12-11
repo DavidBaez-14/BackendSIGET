@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "notificaciones")
@@ -35,13 +36,20 @@ public class Notificacion {
     private Boolean leida = false;
     
     @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    private LocalDateTime fechaCreacion;
     
     @Column(name = "fecha_lectura")
     private LocalDateTime fechaLectura;
     
     @Column
-    private String tipo = "GENERAL"; // GENERAL, INVITACION_PROYECTO, CAMBIO_ESTADO, REUNION
+    private String tipo = "GENERAL";
+    
+    @PrePersist
+    protected void onCreate() {
+        if (fechaCreacion == null) {
+            fechaCreacion = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        }
+    } // GENERAL, INVITACION_PROYECTO, CAMBIO_ESTADO, REUNION
     
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")

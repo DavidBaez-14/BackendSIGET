@@ -7,6 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Entity
@@ -89,7 +90,7 @@ public class Proyecto {
     @PrePersist
     protected void onCreate() {
         if (fechaUltimaActualizacion == null) {
-            fechaUltimaActualizacion = LocalDateTime.now();
+            fechaUltimaActualizacion = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         }
         if (fechaPresentacion == null) {
             fechaPresentacion = LocalDate.now();
@@ -98,6 +99,6 @@ public class Proyecto {
 
     @PreUpdate
     protected void onUpdate() {
-        fechaUltimaActualizacion = LocalDateTime.now();
+        fechaUltimaActualizacion = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 }

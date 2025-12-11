@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "historiales")
@@ -36,7 +37,7 @@ public class Historial {
     @PrePersist
     protected void onCreate() {
         if (fechaEvento == null) {
-            fechaEvento = LocalDateTime.now();
+            fechaEvento = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         }
     }
 }
