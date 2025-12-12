@@ -16,11 +16,12 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         
-        // Permitir localhost (desarrollo) y dominio de producción
+        // Permitir localhost (desarrollo), Digital Ocean y Vercel (producción)
         config.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:*",
-            "https://*.ondigitalocean.app",  // Digital Ocean Apps
-            "https://tudominio.com"           // Tu dominio personalizado (opcional)
+            "https://*.ondigitalocean.app",
+            "https://*.vercel.app",           // Vercel deployments
+            "https://frontend-siget.vercel.app" // Tu app específica
         ));
         
         config.setAllowedHeaders(Arrays.asList("*"));
